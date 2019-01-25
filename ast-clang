@@ -33,8 +33,9 @@ def main():
     astArgv = llvm_path+"/"+clangver + " -emit-ast " + astArgv
     print(astArgv)
     subprocess.call(astArgv, shell=True)
+    print("1")
     #os.execvp(llvm_path+"/clang", ["-emit-ast"] + sys.argv[1:])
-    os.execvp(llvm_path+"/"+clangver, sys.argv[1:])
+    os.execvp(llvm_path+"/"+clangver, [clangver]+sys.argv[1:])
 
     return 1
 
