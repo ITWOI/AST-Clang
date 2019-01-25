@@ -25,7 +25,8 @@ def main():
     m = re.search('-o (\S+)', astArgv)                                                                           
     if m and m.group(1):
         output = m.group(1)
-    astArgv = astArgv.replace(output, "./tmp/" + os.path.basename(output) + ".ast")
+    if output:
+        astArgv = astArgv.replace(output, "./tmp/" + os.path.basename(output) + ".ast")
     clangver = "clang"
     if "c++" in tmpArgv or "cpp" in tmpArgv:
         clangver = "clang++"
