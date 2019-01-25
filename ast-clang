@@ -29,7 +29,7 @@ def main():
     if output != "":
         astArgv = astArgv.replace(output, "./tmp/" + os.path.basename(output) + ".ast")
     clangver = "clang"
-    if "c++" in tmpArgv or "cpp" in tmpArgv:
+    if "c++" in tmpArgv or ".cpp" in tmpArgv:
         clangver = "clang++"
     astArgv = llvm_path+"/"+clangver + " -emit-ast " + astArgv
     #print(astArgv)
