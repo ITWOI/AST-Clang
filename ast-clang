@@ -20,20 +20,18 @@ def main():
     llvm_path = subprocess.Popen(["llvm-config", "--bindir"], stdout=subprocess.PIPE).communicate()[0].strip().decode("utf-8")
 
     tmpArgv = " ".join(sys.argv)
-    print(tmpArgv)
+    #print(tmpArgv)
     astArgv = " ".join(sys.argv[1:])
     m = re.search('-o (\S+)', astArgv)                                                                           
     if m and m.group(1):
-        print(m.group(0))
         output = m.group(1)
     astArgv = astArgv.replace(output, "./tmp/" + os.path.basename(output) + ".ast")
     clangver = "clang"
     if "c++" in tmpArgv or "cpp" in tmpArgv:
         clangver = "clang++"
     astArgv = llvm_path+"/"+clangver + " -emit-ast " + astArgv
-    print(astArgv)
+    #print(astArgv)
     subprocess.call(astArgv, shell=True)
-    print("1")
     #os.execvp(llvm_path+"/clang", ["-emit-ast"] + sys.argv[1:])
     os.execvp(llvm_path+"/"+clangver, [clangver]+sys.argv[1:])
 
