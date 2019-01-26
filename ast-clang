@@ -47,7 +47,7 @@ def main():
             os.remove(astFileName)
     else:
         #when linking
-        if !os.path.exists(astFileName):
+        if not os.path.exists(astFileName):
             subprocess.call("find -path \"*/tmp/*\" -name \"*.ast\" > " + astFileName, shell=True)
     #os.execvp(llvm_path+"/clang", ["-emit-ast"] + sys.argv[1:])
     os.execvp(llvm_path+"/"+clangver, [clangver]+sys.argv[1:])
