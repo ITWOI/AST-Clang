@@ -25,10 +25,26 @@ def main():
     if not os.path.isdir(dirName):
         os.mkdir(dirName)
     llvm_path = subprocess.Popen(["llvm-config", "--bindir"], stdout=subprocess.PIPE).communicate()[0].strip().decode("utf-8")
+    argv = []
+    tmpargv = []
+    # the following two lines fix an error about escape character. I don't know why.
+    # example:  cflow
+    ifOutput=False
+    for arg in sys.argv:
+        if arg.startswith('-D'):
+            argv.append(arg.replace("\"", "\""))
+        else:
+            argv.append(arg)
+        if ifOutput:
+            ifOutput = False
+            tmpargv.append("./tmp/" + os.path.basename(arg)  + ".ast")
+        else:
+            tmpargv.append(arg)
 
-    tmpArgv = " ".join(sys.argv)
-    #print(tmpArgv)
-    astArgv = " ".join(sys.argv[1:])
+        if arg == "-o":
+            ifOutput = True
+    tmpArgv = " ".join(argv)
+    astArgv = " ".join(argv[1:])
     m = re.search('-o (\S+)', astArgv)                                                                           
     output = ""
     if m and m.group(1):
@@ -39,18 +55,23 @@ def main():
     if "c++" in tmpArgv or ".cpp" in tmpArgv:
         clangver = "clang++"
     astArgv = llvm_path+"/"+clangver + " -emit-ast " + astArgv
-    #print(astArgv)
     if not isLinkCommand():
         #when compiling
-        subprocess.call(astArgv, shell=True)
+        #subprocess.call(astArgv, shell=True)
+        #os.spawnvp(os.P_WAIT, llvm_path+"/"+clangver, ["-emit-ast"] + tmpargv[1:])
+        tmpargv = [llvm_path+"/"+clangver]+["-emit-ast"]+tmpargv[1:]
+        print(tmpargv)
+        subprocess.check_output(tmpargv)
+        #os.system(astArgv)
         if os.path.exists(astFileName):
             os.remove(astFileName)
     else:
         #when linking
         if not os.path.exists(astFileName):
             subprocess.call("find -path \"*/tmp/*\" -name \"*.ast\" > " + astFileName, shell=True)
-    #os.execvp(llvm_path+"/clang", ["-emit-ast"] + sys.argv[1:])
-    os.execvp(llvm_path+"/"+clangver, [clangver]+sys.argv[1:])
+    #os.execvp(llvm_path+"/clang", ["-emit-ast"] + argv[1:])
+    print(argv)
+    os.execvp(llvm_path+"/"+clangver, [clangver]+argv[1:])
 
     return 1
 
